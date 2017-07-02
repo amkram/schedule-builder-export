@@ -3,7 +3,7 @@
 # Description
 This extension allows you to quickly and easily import Schedule Builder schedules into Google Calendar.
 # Installation
-Add to Chrome through the Web Store <a href=">here</a>. 
+Add to Chrome through the Web Store <a href="https://chrome.google.com/webstore/detail/schedule-builder-export/dahicfbjacnkkdhphlloeeaadkenloaf">here</a>. 
 
 If you would like to contribute, you can clone this repository and upload it through <a href="chrome://extensions">chrome://extensions</a> -> Load Unpacked Extension after enabling Developer Mode. You'll also need an API key and client-id. 
 
