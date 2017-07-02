@@ -1,0 +1,31 @@
+{
+  "manifest_version": 2,
+
+  "name": "Schedule Builder Export",
+  "description": "This extension allows exporting from UC Davis Schedule Builder to Google Calendar.",
+  "version": "1.2",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon16.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://my.ucdavis.edu/schedulebuilder/index.cfm?*"],
+      "js": ["jquery.js",  "inject_button.js"]
+    }
+  ],
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "permissions": [
+    "tabs", "https://my.ucdavis.edu/schedulebuilder/*", "https://apis.google.com/js/*", "identity"
+  ],
+   "key": "[removed for publication]",
+   "oauth2": {
+     "client_id": "[removed for publication]",
+     "scopes": ["https://www.googleapis.com/auth/calendar"]
+   },
+   "content_security_policy":"script-src 'self' https://apis.google.com; object-src 'self'"
+}
