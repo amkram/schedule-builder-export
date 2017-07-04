@@ -1,6 +1,7 @@
 //Content script to insert "Export" button into Schedule Builder page
 //Scrapes data from Schedule builder and forms a request in compliance with the Google Calendar API, and sends this data to export.js
 
+
 //Create a button inline with the original Schedule Builder buttons 
 var div = document.createElement("div");
 var open = false, exported = false; //Track if the popup window is open, and if exporting has been completed 
@@ -34,10 +35,11 @@ function parseAndExport() {
 	  	if(!exported){ //And we haven't already exported
 	  		//Add the popup to the page
 			div.appendChild(popupWindow);
-			popupWindow.innerHTML = '<h3 style="text-align:center;border-bottom:2px solid gold">Ready To Export!</h3><br><p style="text-align:left">How many weeks will your courses last?</p>' +
+			popupWindow.innerHTML = '<h3 style="text-align:center;border-bottom:2px solid gold">Ready To Export!</h3><br><p>NOTE: You must sign in to Chrome (not Google) for the extension to work. </p><p style="text-align:left">How many weeks will your courses last?</p>' +
 				'<input type="number" value=11 id="numweeks"><br><br><p style="text-align:left">Pick the <em>Monday</em> of the week when classes begin.</p><input type="date" id="startdate">';
 			$('.dropdown-menu').css({"padding": "30px"});
-		  
+			 
+	
 			var eventArray = []; //stores "events" in correct JSON format for Google Calendar requests
 			var dataArray = []; //stores parsed data from Schedule Builder
 			var TBA = false; //Some course times may be listed as TBA
@@ -181,6 +183,25 @@ function createEvent(year, month, day, numWeeks, courseName, parsedName, parsedT
 			endDateTime.setDate(endDateTime.getDate() + 4);
 			break;	
 	}
+
+	//Date the event will run until (start date + numWeeks weeks)
+	var newDate = new Date(endDateTime.getFullYear(), endDateTime.getMonth(), endDateTime.getDate(), end.hours, end.minutes);
+
+	var untilDate = addDays(newDate, numWeeks*7);
+
+	var endMonth = untilDate.getMonth();
+	var endDay = untilDate.getDay();
+  	if(endMonth+1 < 10){
+		endMonth = "0" + "" + (endMonth+1);
+	}
+	else{
+		endMonth = endMonth+1;
+	}
+	var endDay = untilDate.getDate();
+	if(endDay < 10){
+		endDay = "0" + "" + endDay;
+	}
+	console.log(untilDate.getFullYear() + "" + endMonth + "" + endDay);
 	//Format the calendar event into a proper request
 	var event = {
 		 "kind": "calendar#event",
@@ -195,13 +216,19 @@ function createEvent(year, month, day, numWeeks, courseName, parsedName, parsedT
 	       'timeZone': 'America/Los_Angeles'
 		 },
 		 "recurrence": [
-		   "RRULE:FREQ=WEEKLY;COUNT=" + numWeeks + ";BYDAY=" + days
+		   "RRULE:FREQ=WEEKLY;UNTIL=" + untilDate.getFullYear() + "" + endMonth + "" + endDay + ";BYDAY=" + days
 		 ],
 	};
 	return event;
 }
-
-
+function addDays(date, days) {
+ 	 var out = new Date(date.getTime());
+ 	 out.setDate(date.getDate() + days);
+ 	 return out;
+ }
+function numDays(year, month) {
+	return new Date(year, month, 0).getDate();
+}
 function exportToGoogle(eventArray) {
 
 	//Content scripts cannot use chrome.* API (for authorization), so send data to an event page
@@ -236,6 +263,7 @@ function toBYDAY(parsedDays) {
 	}
 	return days;
 }
+
 window.onresize = function(event) {
 	console.log("resize");
     parent = document.getElementsByClassName("menu active")[0];
