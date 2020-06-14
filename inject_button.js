@@ -43,6 +43,7 @@ function parseAndExport() {
 			var eventArray = []; //stores "events" in correct JSON format for Google Calendar requests
 			var dataArray = []; //stores parsed data from Schedule Builder
 			var TBA = false; //Some course times may be listed as TBA
+			var OLA = false; //Some courses have no times and are listed as Online Learning Activities
 
 			var calendarEvent;
 			var courseContainer = document.getElementById("SavedSchedulesListDisplayContainer");
@@ -55,6 +56,7 @@ function parseAndExport() {
 
 			for(var j = 0; j < events.length; j++) { //For each "event" in the course (Lecture, Lab, Discussion...)
 					TBA = false;
+					OLA = false;
 					data = events[j].childNodes; //Contains text to parse out name, time, days, location of the event
 					var eventData = {courseName: "", eventName: "", time: "", days: "",location: ""};
 					eventData.courseName = courseName;
@@ -63,6 +65,9 @@ function parseAndExport() {
 						text = data[k].textContent;
 						if(text.includes("TBA")){
 							TBA = true;
+						}
+						if(text.includes("Online Learning Activity")){
+							OLA = true;
 						}
 						if(/\S/.test(text)) { //Checks that text is not all whitespace
 							//Store parsed data
@@ -84,12 +89,16 @@ function parseAndExport() {
 							count++;
 						}
 					}
-					if(!TBA) {
+					if(!TBA && !OLA) {
 						dataArray.push(eventData);
 					}
-					else {
+					else if (TBA){
 						//Note that TBA courses will not be exported
 						popupWindow.innerHTML +=  '<p style="text-align:left;font-size:10px">(NOTE: ' + courseName.substr(0,10) + "... " + eventData.eventName + ' course time is TBA. Will not be exported.)</p>';
+					}
+					else if (OLA) {
+						//Note that Online Learning Activities will not be exported
+						popupWindow.innerHTML +=  '<p style="text-align:left;font-size:10px">(NOTE: ' + courseName.substr(0,10) + "... " + eventData.eventName + ' is an Online Learning Activity and does not have a course time. Will not be exported.)</p>';
 					}
 				}
 
