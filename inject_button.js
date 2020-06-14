@@ -56,6 +56,7 @@ function parseAndExport() {
 
 			for(var j = 0; j < events.length; j++) { //For each "event" in the course (Lecture, Lab, Discussion...)
 					TBA = false;
+					OLA = false;
 					data = events[j].childNodes; //Contains text to parse out name, time, days, location of the event
 					var eventData = {courseName: "", eventName: "", time: "", days: "",location: ""};
 					eventData.courseName = courseName;
